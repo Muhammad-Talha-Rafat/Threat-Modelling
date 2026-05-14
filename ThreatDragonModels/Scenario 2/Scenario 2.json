@@ -502,7 +502,7 @@
                   "title": "Payment Endpoint Flooding Attack",
                   "status": "Open",
                   "severity": "High",
-                  "type": "Spoofing",
+                  "type": "Denial of service",
                   "description": "An attacker can send a massive volume of payment requests to the backend API endpoint, exhausting server resources such as CPU, memory, and database connections. This makes the payment processing service unavailable to legitimate customers and can result in significant revenue loss for the e-commerce platform.",
                   "mitigation": "Implement rate limiting per user account and per IP address on the payment endpoint. Use a Web Application Firewall (WAF) to detect and block abnormal traffic patterns. Deploy auto-scaling infrastructure to absorb traffic spikes. Set up alerting for unusual request volume thresholds.",
                   "modelType": "STRIDE",
@@ -529,7 +529,7 @@
                 "tampering": 0,
                 "repudiation": 0,
                 "informationDisclosure": 0,
-                "denialOfService": 0,
+                "denialOfService": 1,
                 "elevationOfPrivilege": 1
               }
             }
