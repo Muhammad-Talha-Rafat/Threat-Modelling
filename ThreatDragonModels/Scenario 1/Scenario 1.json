@@ -19,17 +19,17 @@
         "cells": [
           {
             "position": {
-              "x": 500,
-              "y": 160
+              "x": 480,
+              "y": 159.99999999999994
             },
             "size": {
-              "width": 280,
+              "width": 320,
               "height": 90
             },
             "visible": true,
             "shape": "trust-boundary-box",
-            "id": "52072594-9a29-4703-a10c-97bed3192b1b",
             "zIndex": -1,
+            "id": "52072594-9a29-4703-a10c-97bed3192b1b",
             "data": {
               "type": "tm.BoundaryBox",
               "name": "Trust Boundary",
@@ -37,8 +37,8 @@
               "isTrustBoundary": true,
               "hasOpenThreats": false,
               "crossingFlows": [
-                "3da7e126-5dcb-4555-8973-f03351748980",
-                "57c8b469-13e2-4b5c-bd17-6a631b308b0f"
+                "57c8b469-13e2-4b5c-bd17-6a631b308b0f",
+                "db0f4474-c691-42ba-8db4-37aaa07c4167"
               ],
               "containedElements": [
                 "918dd66f-0191-4b63-a095-2e534ef74d64",
@@ -57,6 +57,7 @@
             },
             "visible": true,
             "shape": "trust-boundary-box",
+            "zIndex": -1,
             "id": "7d51030b-5bff-4157-bf62-74197af521d3",
             "data": {
               "type": "tm.BoundaryBox",
@@ -70,8 +71,7 @@
               "containedElements": [
                 "c24c925b-99f5-4902-affb-7c512f108318"
               ]
-            },
-            "zIndex": -1
+            }
           },
           {
             "position": {
@@ -94,6 +94,7 @@
             },
             "visible": true,
             "shape": "actor",
+            "zIndex": 1,
             "ports": {
               "groups": {
                 "top": {
@@ -177,7 +178,6 @@
               ]
             },
             "id": "44a1afaa-a9a7-42de-940e-b2feaf0a7db5",
-            "zIndex": 1,
             "data": {
               "type": "tm.Actor",
               "name": "User",
@@ -204,13 +204,14 @@
                 "text": "Web\nServer"
               },
               "body": {
-                "stroke": "#333333",
-                "strokeWidth": 1.5,
+                "stroke": "red",
+                "strokeWidth": 2.5,
                 "strokeDasharray": null
               }
             },
             "visible": true,
             "shape": "process",
+            "zIndex": 2,
             "ports": {
               "groups": {
                 "top": {
@@ -294,7 +295,6 @@
               ]
             },
             "id": "918dd66f-0191-4b63-a095-2e534ef74d64",
-            "zIndex": 2,
             "data": {
               "type": "tm.Process",
               "name": "Web\nServer",
@@ -302,12 +302,73 @@
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
-              "hasOpenThreats": false,
+              "hasOpenThreats": true,
               "handlesCardPayment": false,
               "handlesGoodsOrServices": false,
               "isWebApplication": false,
               "privilegeLevel": "",
-              "threats": []
+              "threats": [
+                {
+                  "id": "a7dbbe7b-812d-4047-b1dd-c7e45d3ac5c4",
+                  "title": "Credential Spoofing via Stolen Session Token",
+                  "status": "Open",
+                  "severity": "High",
+                  "type": "Spoofing",
+                  "description": "An attacker who obtains a valid session token can impersonate a legitimate user by replaying the token in subsequent requests. The web server cannot distinguish the attacker from the real user, granting unauthorized access.",
+                  "mitigation": "Implement secure, HttpOnly, and SameSite cookie flags for session tokens. Enforce short session expiry and regenerate tokens after login. Use HTTPS to prevent token interception in transit.",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 1,
+                  "score": ""
+                },
+                {
+                  "id": "8d341a1a-c912-44f8-b962-a918bfa9a2cc",
+                  "title": "Tampering with Stored Credentials",
+                  "status": "Open",
+                  "severity": "High",
+                  "type": "Tampering",
+                  "description": "An attacker with unauthorized database access could modify stored password hashes or replace them with known values, allowing them to log in as any user without knowing the original password.",
+                  "mitigation": "Apply strict database access controls so only the web server process can query the credentials table. Use strong hashing algorithms (bcrypt or Argon2) with salting. Enable database audit logging to detect unauthorized modifications.",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 2,
+                  "score": ""
+                },
+                {
+                  "id": "66b82678-ff2b-40be-a566-09fc5a13e23e",
+                  "title": "Sensitive Credentials Exposed in Transit",
+                  "status": "Open",
+                  "severity": "High",
+                  "type": "Information disclosure",
+                  "description": "If the connection between the user and web server is downgraded from HTTPS to HTTP through a man-in-the-middle attack, login credentials (username and password) transmitted in the request body can be intercepted and read in plaintext.",
+                  "mitigation": "Enforce HTTPS using HTTP Strict Transport Security (HSTS) headers to prevent protocol downgrade attacks. Ensure TLS 1.2 or higher is used. Never transmit credentials over unencrypted channels.",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 3,
+                  "score": ""
+                },
+                {
+                  "id": "5ef5fd4b-12f6-4068-8871-41e51a8cc195",
+                  "title": "Brute Force Attack on Login Endpoint",
+                  "status": "Open",
+                  "severity": "Medium",
+                  "type": "Denial of service",
+                  "description": "An attacker can flood the login endpoint with thousands of automated requests attempting different password combinations. This exhausts server resources, making the authentication service unavailable to legitimate users, and may also succeed in guessing weak passwords.",
+                  "mitigation": "Implement account lockout after a defined number of failed attempts (e.g. 5). Apply rate limiting on the login endpoint per IP address. Use CAPTCHA to distinguish human users from automated bots. Monitor and alert on unusual login attempt volumes.",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 4,
+                  "score": ""
+                }
+              ],
+              "threatFrequency": {
+                "spoofing": 2,
+                "tampering": 1,
+                "repudiation": 0,
+                "informationDisclosure": 1,
+                "denialOfService": 1,
+                "elevationOfPrivilege": 0
+              }
             }
           },
           {
@@ -334,6 +395,7 @@
             },
             "visible": true,
             "shape": "store",
+            "zIndex": 4,
             "ports": {
               "groups": {
                 "top": {
@@ -417,7 +479,6 @@
               ]
             },
             "id": "c24c925b-99f5-4902-affb-7c512f108318",
-            "zIndex": 4,
             "data": {
               "type": "tm.Store",
               "name": "User Database",
@@ -455,6 +516,7 @@
             },
             "visible": true,
             "shape": "process",
+            "zIndex": 5,
             "ports": {
               "groups": {
                 "top": {
@@ -551,57 +613,7 @@
               "isWebApplication": false,
               "privilegeLevel": "",
               "threats": []
-            },
-            "zIndex": 5
-          },
-          {
-            "shape": "flow",
-            "attrs": {
-              "line": {
-                "stroke": "#333333",
-                "targetMarker": {
-                  "name": "block"
-                },
-                "sourceMarker": {
-                  "name": ""
-                },
-                "strokeDasharray": null
-              }
-            },
-            "width": 200,
-            "height": 100,
-            "zIndex": 10,
-            "connector": "smooth",
-            "data": {
-              "type": "tm.Flow",
-              "name": "",
-              "description": "",
-              "outOfScope": false,
-              "isTrustBoundary": false,
-              "reasonOutOfScope": "",
-              "hasOpenThreats": false,
-              "isBidirectional": false,
-              "isEncrypted": false,
-              "isPublicNetwork": false,
-              "protocol": "",
-              "threats": [],
-              "trustBoundaryIds": [
-                "52072594-9a29-4703-a10c-97bed3192b1b"
-              ]
-            },
-            "labels": [
-              ""
-            ],
-            "id": "3da7e126-5dcb-4555-8973-f03351748980",
-            "source": {
-              "cell": "44a1afaa-a9a7-42de-940e-b2feaf0a7db5",
-              "port": "0b95555a-85d0-4cd2-8dd2-f77fe2839c68"
-            },
-            "target": {
-              "cell": "918dd66f-0191-4b63-a095-2e534ef74d64",
-              "port": "61b1efe2-4902-42b0-b87f-1438a321b280"
-            },
-            "vertices": []
+            }
           },
           {
             "shape": "flow",
@@ -652,12 +664,108 @@
               "port": "0476b8c1-0c9a-493d-8c91-cafa6f02013b"
             },
             "vertices": []
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": "block"
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "",
+              "description": "",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "isBidirectional": true,
+              "isEncrypted": false,
+              "isPublicNetwork": false,
+              "protocol": "",
+              "threats": [],
+              "trustBoundaryIds": []
+            },
+            "labels": [
+              ""
+            ],
+            "id": "4a3c2c66-7386-48a3-ad2a-3f6a0b152f1f",
+            "source": {
+              "cell": "918dd66f-0191-4b63-a095-2e534ef74d64",
+              "port": "c1fb6fae-e90b-498a-87e8-2484af37509e"
+            },
+            "target": {
+              "cell": "7d91ab7c-4a2e-4938-b185-3832bcd34f7b",
+              "port": "61b1efe2-4902-42b0-b87f-1438a321b280"
+            },
+            "vertices": []
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": "block"
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "",
+              "description": "",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "isBidirectional": true,
+              "isEncrypted": false,
+              "isPublicNetwork": false,
+              "protocol": "",
+              "threats": [],
+              "trustBoundaryIds": [
+                "52072594-9a29-4703-a10c-97bed3192b1b"
+              ]
+            },
+            "labels": [
+              ""
+            ],
+            "id": "db0f4474-c691-42ba-8db4-37aaa07c4167",
+            "source": {
+              "cell": "44a1afaa-a9a7-42de-940e-b2feaf0a7db5",
+              "port": "0b95555a-85d0-4cd2-8dd2-f77fe2839c68"
+            },
+            "target": {
+              "cell": "918dd66f-0191-4b63-a095-2e534ef74d64",
+              "port": "61b1efe2-4902-42b0-b87f-1438a321b280"
+            },
+            "vertices": []
           }
         ]
       }
     ],
     "diagramTop": 1,
     "reviewer": "",
-    "threatTop": 0
+    "threatTop": 4
   }
 }
